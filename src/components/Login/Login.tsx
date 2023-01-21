@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
@@ -9,11 +9,35 @@ interface Props {
 }
 
 export default function Login(props: Props) {
-  const [enteredEmail, setEnteredEmail] = useState('');
+  const [enteredEmail, setEnteredEmail] = useState<string>("");
   const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
-  const [enteredPassword, setEnteredPassword] = useState('');
+  const [enteredPassword, setEnteredPassword] = useState<string>("");
   const [passwordIsValid, setPasswordIsValid] = useState<boolean>(true);
   const [formIsValid, setFormIsValid] = useState(false);
+
+  useEffect(() => {
+    console.log("EFFECT RUNNING");
+
+    return () => {
+      console.log("EFFECT CLEANUP");
+    };
+  }, []);
+
+  // useEffect(() => {
+
+  //   const timeoutHandler = setTimeout(() => {
+  //     console.log("checking form validity");
+  //     setFormIsValid(enteredEmail.includes('@') && enteredPassword.trim().length > 6);
+  //   }, 500);
+
+  //   return () => {
+  //     console.log("CLEANUP")
+  //     clearTimeout(timeoutHandler);
+  //   };
+
+  // }, [enteredEmail, enteredPassword]);
+
+
 
   const emailChangeHandler = (event: FormEvent<HTMLInputElement>) => {
     setEnteredEmail(event.currentTarget.value);
@@ -27,17 +51,30 @@ export default function Login(props: Props) {
     setEnteredPassword(event.currentTarget.value);
 
     setFormIsValid(
-      event.currentTarget.value.trim().length > 6 && enteredEmail.includes('@')
+      enteredEmail.includes('@') && event.currentTarget.value.trim().length > 6
     );
   };
 
+  const isEmailValid = () => {
+    return enteredEmail.includes("@");
+  }
+
   const validateEmailHandler = () => {
-    setEmailIsValid(enteredEmail.includes('@'));
+    setEmailIsValid(isEmailValid());
   };
 
+  const isPasswordValid = () => {
+    return enteredPassword.trim().length > 6;
+  }
+
   const validatePasswordHandler = () => {
-    setPasswordIsValid(enteredPassword.trim().length > 6);
+    setPasswordIsValid(isPasswordValid());
   };
+
+  const isFormValid = () => {
+    return isEmailValid() && isPasswordValid();
+  }
+
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -48,9 +85,8 @@ export default function Login(props: Props) {
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
         <div
-          className={`${classes.control} ${
-            emailIsValid === false ? classes.invalid : ''
-          }`}
+          className={`${classes.control} ${emailIsValid === false ? classes.invalid : ''
+            }`}
         >
           <label htmlFor="email">E-Mail</label>
           <input
@@ -62,9 +98,8 @@ export default function Login(props: Props) {
           />
         </div>
         <div
-          className={`${classes.control} ${
-            passwordIsValid === false ? classes.invalid : ''
-          }`}
+          className={`${classes.control} ${passwordIsValid === false ? classes.invalid : ''
+            }`}
         >
           <label htmlFor="password">Password</label>
           <input
