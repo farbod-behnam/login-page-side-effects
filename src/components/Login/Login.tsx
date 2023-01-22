@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useReducer, useState } from 'react';
+import { FormEvent, useContext, useEffect, useReducer, useState } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
@@ -6,6 +6,7 @@ import Button from '../UI/Button/Button';
 import { State } from '../../models/State.model';
 import { Action } from '../../models/Action.model';
 import { ActionEnum } from '../../models/Action.enum';
+import AuthContext from '../../context/auth-context';
 
 
 
@@ -34,19 +35,15 @@ const passwordReducer = (prevState: State, action: Action): State => {
   return new State("", false);
 }
 
-interface Props {
-  onLogin: (enteredEmail: string, enteredPassword: string) => void;
-}
 
-export default function Login(props: Props) {
-  // const [enteredEmail, setEnteredEmail] = useState<string>("");
-  // const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
-  // const [enteredPassword, setEnteredPassword] = useState<string>("");
-  // const [passwordIsValid, setPasswordIsValid] = useState<boolean>(true);
+export default function Login() {
   const [formIsValid, setFormIsValid] = useState(false);
 
   const [emailState, dispatchEmail] = useReducer(emailReducer, new State("", true));
   const [passwordState, dispatchPassword] = useReducer(passwordReducer, new State("", true));
+
+  const authCtx = useContext(AuthContext);
+
 
   useEffect(() => {
     console.log("EFFECT RUNNING");
@@ -106,7 +103,7 @@ export default function Login(props: Props) {
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    props.onLogin(emailState.value, passwordState.value);
+    authCtx.onLogin(emailState.value, passwordState.value);
   };
 
   return (
