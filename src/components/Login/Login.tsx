@@ -56,8 +56,6 @@ export default function Login(props: Props) {
     };
   }, []);
 
-  const { isValid: emailIsValid } = emailState;
-  const { isValid: passwordIsValid } = passwordState;
 
   useEffect(() => {
 
