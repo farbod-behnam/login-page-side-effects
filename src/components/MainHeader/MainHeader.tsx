@@ -5,14 +5,13 @@ import classes from './MainHeader.module.css';
 
 interface Props {
   onLogout: () => void;
-  isAuthenticated: boolean;
 }
 
 export default function MainHeader(props: Props) {
   return (
     <header className={classes['main-header']}>
       <h1>A Typical Page</h1>
-      <Navigation isLoggedIn={props.isAuthenticated} onLogout={props.onLogout} />
+      <Navigation onLogout={props.onLogout} />
     </header>
   );
 };
