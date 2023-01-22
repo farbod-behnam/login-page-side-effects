@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useReducer, useState } from 'react';
+import { FormEvent, useEffect, useReducer, useState } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
@@ -56,19 +56,22 @@ export default function Login(props: Props) {
     };
   }, []);
 
-  // useEffect(() => {
+  const { isValid: emailIsValid } = emailState;
+  const { isValid: passwordIsValid } = passwordState;
 
-  //   const timeoutHandler = setTimeout(() => {
-  //     console.log("checking form validity");
-  //     setFormIsValid(enteredEmail.includes('@') && enteredPassword.trim().length > 6);
-  //   }, 500);
+  useEffect(() => {
 
-  //   return () => {
-  //     console.log("CLEANUP")
-  //     clearTimeout(timeoutHandler);
-  //   };
+    const timeoutHandler = setTimeout(() => {
+      console.log("checking form validity");
+      setFormIsValid(emailState.isValid && passwordState.isValid);
+    }, 500);
 
-  // }, [enteredEmail, enteredPassword]);
+    return () => {
+      console.log("CLEANUP")
+      clearTimeout(timeoutHandler);
+    };
+
+  }, [emailState.isValid, passwordState.isValid]);
 
 
 
@@ -86,9 +89,6 @@ export default function Login(props: Props) {
     setFormIsValid(emailState.isValid && passwordState.isValid);
   };
 
-  const isEmailValid = () => {
-    return emailState.isValid;
-  }
 
   const validateEmailHandler = () => {
     // setEmailIsValid(emailState.isValid);
@@ -96,18 +96,14 @@ export default function Login(props: Props) {
     // return isEmailValid();
   };
 
-  const isPasswordValid = () => {
-    return passwordState.isValid;
-  }
+
 
   const validatePasswordHandler = () => {
     // setPasswordIsValid(isPasswordValid());
     dispatchPassword(new Action(ActionEnum.INPUT_BLUR, ""));
   };
 
-  const isFormValid = () => {
-    return isEmailValid() && isPasswordValid();
-  }
+
 
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
