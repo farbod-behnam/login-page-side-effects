@@ -1,19 +1,52 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useReducer, useState } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
+import { State } from '../../models/State.model';
+import { Action } from '../../models/Action.model';
+import { ActionEnum } from '../../models/Action.enum';
+
+
+
+const emailReducer = (prevState: State, action: Action): State => {
+
+  if (action.type === ActionEnum.USER_INPUT) {
+    return new State(action.value, action.value.includes("@"));
+  }
+  if (action.type === ActionEnum.INPUT_BLUR) {
+    return new State(prevState.value, prevState.value.includes("@"))
+  }
+
+  return new State("", false);
+
+};
+
+const passwordReducer = (prevState: State, action: Action): State => {
+
+  if (action.type === ActionEnum.USER_INPUT) {
+    return new State(action.value, action.value.trim().length > 6);
+  }
+  if (action.type === ActionEnum.INPUT_BLUR) {
+    return new State(prevState.value, prevState.value.trim().length > 6)
+  }
+
+  return new State("", false);
+}
 
 interface Props {
   onLogin: (enteredEmail: string, enteredPassword: string) => void;
 }
 
 export default function Login(props: Props) {
-  const [enteredEmail, setEnteredEmail] = useState<string>("");
-  const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
-  const [enteredPassword, setEnteredPassword] = useState<string>("");
-  const [passwordIsValid, setPasswordIsValid] = useState<boolean>(true);
+  // const [enteredEmail, setEnteredEmail] = useState<string>("");
+  // const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
+  // const [enteredPassword, setEnteredPassword] = useState<string>("");
+  // const [passwordIsValid, setPasswordIsValid] = useState<boolean>(true);
   const [formIsValid, setFormIsValid] = useState(false);
+
+  const [emailState, dispatchEmail] = useReducer(emailReducer, new State("", true));
+  const [passwordState, dispatchPassword] = useReducer(passwordReducer, new State("", true));
 
   useEffect(() => {
     console.log("EFFECT RUNNING");
@@ -40,35 +73,36 @@ export default function Login(props: Props) {
 
 
   const emailChangeHandler = (event: FormEvent<HTMLInputElement>) => {
-    setEnteredEmail(event.currentTarget.value);
+    // setEnteredEmail(event.currentTarget.value);
+    dispatchEmail(new Action(ActionEnum.USER_INPUT, event.currentTarget.value));
 
-    setFormIsValid(
-      event.currentTarget.value.includes('@') && enteredPassword.trim().length > 6
-    );
+    setFormIsValid(emailState.isValid && passwordState.isValid);
   };
 
   const passwordChangeHandler = (event: FormEvent<HTMLInputElement>) => {
-    setEnteredPassword(event.currentTarget.value);
+    // setEnteredPassword(event.currentTarget.value);
+    dispatchPassword(new Action(ActionEnum.USER_INPUT, event.currentTarget.value));
 
-    setFormIsValid(
-      enteredEmail.includes('@') && event.currentTarget.value.trim().length > 6
-    );
+    setFormIsValid(emailState.isValid && passwordState.isValid);
   };
 
   const isEmailValid = () => {
-    return enteredEmail.includes("@");
+    return emailState.isValid;
   }
 
   const validateEmailHandler = () => {
-    setEmailIsValid(isEmailValid());
+    // setEmailIsValid(emailState.isValid);
+    dispatchEmail(new Action(ActionEnum.INPUT_BLUR, ""));
+    // return isEmailValid();
   };
 
   const isPasswordValid = () => {
-    return enteredPassword.trim().length > 6;
+    return passwordState.isValid;
   }
 
   const validatePasswordHandler = () => {
-    setPasswordIsValid(isPasswordValid());
+    // setPasswordIsValid(isPasswordValid());
+    dispatchPassword(new Action(ActionEnum.INPUT_BLUR, ""));
   };
 
   const isFormValid = () => {
@@ -78,34 +112,32 @@ export default function Login(props: Props) {
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    props.onLogin(enteredEmail, enteredPassword);
+    props.onLogin(emailState.value, passwordState.value);
   };
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
         <div
-          className={`${classes.control} ${emailIsValid === false ? classes.invalid : ''
-            }`}
+          className={`${classes.control} ${emailState.isValid === false ? classes.invalid : ''}`}
         >
           <label htmlFor="email">E-Mail</label>
           <input
             type="email"
             id="email"
-            value={enteredEmail}
+            value={emailState.value}
             onChange={emailChangeHandler}
             onBlur={validateEmailHandler}
           />
         </div>
         <div
-          className={`${classes.control} ${passwordIsValid === false ? classes.invalid : ''
-            }`}
+          className={`${classes.control} ${passwordState.isValid === false ? classes.invalid : ''}`}
         >
           <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
-            value={enteredPassword}
+            value={passwordState.value}
             onChange={passwordChangeHandler}
             onBlur={validatePasswordHandler}
           />

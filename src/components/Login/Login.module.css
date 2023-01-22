@@ -39,8 +39,9 @@
 }
 
 .control.invalid input {
-  border-color: red;
-  background: #fbdada;
+  border: 2px solid red;
+  /* border-color: red; */
+  background: #facbcb;
 }
 
 .actions {
