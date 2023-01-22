@@ -1,6 +1,6 @@
 import { Children, ReactNode } from "react";
 import AuthContext from "../../context/auth-context";
-import { Auth } from "../../models/Auth.model";
+import { Auth } from "../../interfaces/Auth.interface";
 
 interface Props {
     children: ReactNode;

@@ -1,6 +1,6 @@
 import React from "react";
-import { Auth } from "../models/Auth.model";
+import { Auth } from "../interfaces/Auth.interface";
 
-const AuthContext = React.createContext<Auth>(new Auth(false));
+const AuthContext = React.createContext<Auth>({isLoggedIn: false, onLogout: () => {}});
 
 export default AuthContext;
