@@ -104,7 +104,14 @@ export default function Login() {
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    authCtx.onLogin(emailState.value, passwordState.value);
+
+    if (formIsValid) 
+      authCtx.onLogin(emailState.value, passwordState.value);
+    else if (!emailState.isValid) {
+    }
+    else {
+
+    }
   };
 
   return (
